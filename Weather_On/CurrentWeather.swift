@@ -15,6 +15,8 @@ class CurrentWeather {
     var _weatherType: String!
     var _currentTemp: Double!
     
+    var forecasts = [Forecast]()
+    
     var cityName: String {
         if _cityName == nil {
             _cityName = ""
@@ -83,4 +85,30 @@ class CurrentWeather {
         }
         
     }
+    
+    func downloadForecastData(completed: @escaping  DownloadComplete) {
+        //downloading forecast weather data for tableview
+        
+        Alamofire.request(FORECAST_URL).responseJSON { response in
+            let result = response.result
+            
+            if let dict = result.value as? Dictionary<String, AnyObject> {
+                //run through the json dict and for every forecast we find we add it to another dictionary
+                if let list = dict["list"] as? [Dictionary<String, AnyObject>] {
+                    
+                    for obj in list {
+                        let forecast = Forecast(weatherDict: obj)
+                        self.forecasts.append(forecast)
+                        //print(obj)
+                    }
+                    //removes 1st slot in array to get tomorrows weather for the 1st cell
+                    self.forecasts.remove(at: 0)
+                 
+                }
+            }
+            completed()
+        }
+        
+    }
+
 }
