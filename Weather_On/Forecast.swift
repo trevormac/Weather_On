@@ -52,7 +52,7 @@ class Forecast {
                 let kelvinToCelsius = Int(kelvinToCelsiusDbl)
                 
                 
-                self._lowTemp = "\(kelvinToCelsius)°C"
+                self._lowTemp = "\(kelvinToCelsius)°"
             }
             
             if let max = temp["max"] as? Double {
@@ -62,7 +62,7 @@ class Forecast {
                 let kelvinToCelsius = Int(kelvinToCelsiusDbl)
                 
                 
-                self._highTemp = "\(kelvinToCelsius)°C"
+                self._highTemp = "\(kelvinToCelsius)°"
             }
         }
         if let weather = weatherDict["weather"] as? [Dictionary<String, AnyObject>] {
