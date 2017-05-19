@@ -13,7 +13,7 @@ class CurrentWeather {
     var _cityName: String!
     var _date: String!
     var _weatherType: String!
-    var _currentTemp: Double!
+    var _currentTemp: Int!
     
     var forecasts = [Forecast]()
     
@@ -33,7 +33,7 @@ class CurrentWeather {
         dateFormatter.dateStyle = .long
         dateFormatter.timeStyle = .none
         let currentDate = dateFormatter.string(from: Date())
-        self._date = "Today, \(currentDate)"
+        self._date = "\(currentDate)"
         return _date
     }
     
@@ -44,9 +44,9 @@ class CurrentWeather {
         return _weatherType
     }
     
-    var currentTemp: Double {
+    var currentTemp: Int {
         if _currentTemp == nil {
-            _currentTemp = 0.0
+            _currentTemp = 0
         }
         return _currentTemp
     }
@@ -72,11 +72,11 @@ class CurrentWeather {
                     
                     if let currentTemperature = main["temp"] as? Double {
                         
-                        let kelvinToFarenheitPreDivision = (currentTemperature * (9/5) - 459.67)
+                        let kelvinToCelsiusDbl = round(currentTemperature - 273.15)
                         
-                        let kelvinToFarenheit = Double(round(10 * kelvinToFarenheitPreDivision/10))
+                        let kelvinToCelsius = Int(kelvinToCelsiusDbl)
                         
-                        self._currentTemp = kelvinToFarenheit
+                        self._currentTemp = kelvinToCelsius
                         print(self._currentTemp)
                     }
                 }

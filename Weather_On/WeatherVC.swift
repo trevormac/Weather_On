@@ -92,7 +92,7 @@ class WeatherVC: UIViewController, UITableViewDelegate, UITableViewDataSource, C
     
     func updateMainUI() {
         dateLabel.text = currentWeather.date
-        currentTempLabel.text = "\(currentWeather.currentTemp)°"
+        currentTempLabel.text = "\(currentWeather.currentTemp)°C"
         locationLabel.text = currentWeather.cityName
         currentWeatherLabel.text = currentWeather.weatherType
         //passes in the asset which is named exactly like the "weathertype" value coming in
