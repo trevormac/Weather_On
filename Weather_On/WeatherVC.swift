@@ -34,14 +34,13 @@ class WeatherVC: UIViewController, UITableViewDelegate, UITableViewDataSource, C
         locationManager.requestWhenInUseAuthorization()
         locationManager.startMonitoringSignificantLocationChanges()
         locationManager.startUpdatingLocation()
+        locationManager.requestLocation()
         currentLocation = nil
         
         tableView.delegate = self
         tableView.dataSource = self
         currentWeather  = CurrentWeather()
-        //forecast = Forecast()
-        
-        
+         
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -49,26 +48,52 @@ class WeatherVC: UIViewController, UITableViewDelegate, UITableViewDataSource, C
         locationAuthStatus()
     }
     
-    func locationAuthStatus() {
-        if CLLocationManager.authorizationStatus() == .authorizedWhenInUse {
-            //access our location and then save it to our singleton class
-            currentLocation = locationManager.location
-            Location.sharedInstance.latitude = currentLocation.coordinate.latitude
-            Location.sharedInstance.longitude = currentLocation.coordinate.longitude
-            //now our location is accessible from anywhere within the app
-            print(Location.sharedInstance.longitude,Location.sharedInstance.latitude)
-            currentWeather.downloadWeatherDetails {
-                self.currentWeather.downloadForecastData {
-                    
-                    self.updateMainUI()
-                    self.tableView.reloadData()
-                }
-                
-            }
-
+    
+    func locationAuthStatus(){
+        if CLLocationManager.authorizationStatus() == .authorizedWhenInUse{
+            locationManager.requestLocation() //implements didUpdateLocations delegate see below
+            
         }else{
             locationManager.requestWhenInUseAuthorization()
-            locationAuthStatus()
+            locationAuthStatus() //recursive
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let userLocation:CLLocation = locations[0] as CLLocation //an array of CLLocations
+        
+        //currentLocation = locationManager.location
+        Location.sharedInstance.latitude = userLocation.coordinate.latitude
+        Location.sharedInstance.longitude = userLocation.coordinate.longitude
+        
+        //update UI with new data
+        currentWeather = CurrentWeather()
+        self.currentWeather.downloadWeatherDetails{
+            
+           self.currentWeather.downloadForecastData{
+                //Update UI
+            
+                self.tableView.reloadData()
+                self.updateMainUI()
+            }
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        //If requestLocation() fails then default to Toronto Coordinates
+        Location.sharedInstance.latitude = 43.6532
+        Location.sharedInstance.longitude = -79.3832
+        
+        //Update UI with default data
+        currentWeather = CurrentWeather()
+        currentWeather.downloadWeatherDetails{
+           
+            self.currentWeather.downloadForecastData{
+                //Update UI
+                
+                self.tableView.reloadData()
+                self.updateMainUI()
+            }
         }
     }
     
